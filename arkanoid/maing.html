@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <h1 id="g"></h1>
+    </body>
+ <style>
+    body{
+        background-image:url(228337.jpg);
+        display: flex;
+        justify-content: center;}
+    canvas{
+    display: inline-block;
+    color: white;
+    padding: 20px 30px;
+    margin: 10px 20px;
+    border-radius: 15px;
+    font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background-image: linear-gradient(to right, #d41010 0%, #1633b3 51%, #67931f 100%);
+    background-size: 200% auto;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .1);
+    transition: .5s;}
+ </style>
+<script>
+    var canvas = document.createElement("canvas");
+    var c = canvas.getContext("2d");
+    canvas.width = 800;
+    canvas.height = 700;
+    document.body.appendChild(canvas);
+
+    gravity = 0,5
+    speed = 2
+
+    var cr = 'rgb('+
+        Math.floor(Math.random()*256)+','+
+        Math.floor(Math.random()*256)+','+
+        Math.floor(Math.random()*256)+')';
+
+    class brick{
+        constructor(x1, y1){
+        this.position={x:x1, y:y1}
+        this.width = 70;
+        this.height = 30;}
+        draw(){
+             c.fillStyle =  cr
+             c.fillRect( this.position.x,  this.position.y, this.width, this.height)}}
+
+    class Platform{
+        constructor(){
+             this.position={x:310, y:650}
+             this.width = 200;
+             this.height = 20;
+             this.velocity = {x: 0, y: 0}
+         }
+         draw(){
+             c.fillStyle = "black";
+             c.fillRect( this.position.x,  this.position.y, this.width, this.height);
+             this.position.y += this.velocity.y 
+             this.position.x += this.velocity.x      
+     }}
+     class Ball{
+        constructor(){
+             this.position={x:400, y:450}
+             this.width = 20;
+             this.height = 20;
+             this.velocity = {x: 0, y: 2}}
+     
+    draw(){
+        c.fillStyle = "blue";
+        c.fillRect( this.position.x,  this.position.y, this.width, this.height);
+        this.position.y += this.velocity.y 
+        this.position.x += this.velocity.x 
+
+        if ((this.position.y + this.height) <= canvas.height){
+            this.velocity.y += 0;}
+        else{this.velocity.y = gravity;}}}
+        
+        const plat = new Platform()
+
+        gg = new Image()
+        gg.src= "gg1.png"
+
+        const ball = new Ball()
+
+        const b1 = new brick(650, 100)
+        
+        var score = 0
+
+        var g = "Ты проиграл :("
+        var g1 = "Ты выйграл :)"
+ 
+        var briks = []
+
+        for (let row = 0; row < 8; row++){
+            for (let col = 0; col < 9; col++) 
+                {const b1 = new brick(col*80 + 45, row*40 +15);
+                    briks.push(b1)}}
+
+    function connectplat(){
+        if ((ball.position.x < plat.position.x+ plat.width)&&(ball.position.x + ball.width > plat.position.x)&&(ball.position.y < plat.position.y+ plat.height)&&(ball.position.y + ball.height > plat.position.y)){
+            speed *= 1.05
+            ball.velocity.y = -speed;
+            
+            if (ball.velocity.x >= 0){
+                ball.velocity.x = speed}
+                else{ball.velocity.x = -speed}}}
+
+    function walls(){
+        if ((ball.position.x < 800)&&(ball.position.x + ball.width > 800)){
+            ball.velocity.x = -speed}
+
+        if ((ball.position.x < 0)&&(ball.position.x + ball.width > 0)){
+            ball.velocity.x = speed}
+
+        if (ball.position.y <= 0){
+            ball.velocity.y = speed}
+
+        if (ball.position.y >= 680){
+            ball.velocity.y = 0
+            ball.velocity.x = 0
+            c.fillStyle = "purple";
+            c.font = "italic 50pt Arial";
+            clearInterval(igra)
+            c.fillText(g, 150, 370);}
+
+        if ((800 < plat.position.x+ plat.width)&&(800 > plat.position.x)){
+            plat.position.x = 600
+            console.log(1)}
+
+        if ((0 < plat.position.x+ plat.width)&&(0 > plat.position.x)){
+            plat.position.x = 0}}
+
+   function brikboom(brick){
+        if ((ball.position.x < brick.position.x+ brick.width)&&(ball.position.x + ball.width > brick.position.x)
+        &&(ball.position.y < brick.position.y+ brick.height)&&(ball.position.y + ball.height > brick.position.y)){
+            brick.position.x = 10000;
+            brick.position.y = 10000;
+            score +=  1
+
+            if (ball.velocity.y <= 0){
+                ball.velocity.y = speed}
+                else{ball.velocity.y = -speed
+                }
+
+            if (ball.velocity.x <= 0){
+                ball.velocity.x = -speed}
+                else{ball.velocity.x = speed}}} 
+
+        function ggg(){
+            c.fillStyle = "purple";
+            c.font = "italic 50pt Arial";
+            if (score >=72){
+            clearInterval(igra)
+            c.fillText(g1, 180, 370);}}
+ 
+        function game(){
+            c.fillRect(0,0,canvas.width,canvas.height)
+            c.drawImage(gg, 0, 0, canvas.width, canvas.height)
+            briks.forEach((elem) =>{elem.draw(), brikboom(elem)})
+            document.getElementById("g").innerText = score 
+            
+            ball.draw()
+            plat.draw()
+
+           connectplat()
+           walls()
+           ggg()}
+
+       var igra = setInterval(game, 20)
+
+    document.addEventListener("keydown", ({keyCode}) => {
+         switch(keyCode){
+            case 65:
+            plat.velocity.x = -10;
+                break;
+                case 68:
+                plat.velocity.x = 10;
+                    break;}});
+
+     document.addEventListener("keyup", ({keyCode}) => {
+         switch(keyCode){
+            case 65:
+                plat.velocity.x = 0;
+                break;
+                case 68:
+                    plat.velocity.x= 0;
+                    break;}});
+</script>
+</html>
